@@ -36,8 +36,8 @@ app.get('/ourcampaigns', (req, res)=>{
     
 })
 
-app.listen(3001, '192.168.1.73',()=>{
-    console.log('app is running at port 3001');
+app.listen(process.env.PORT || 3000,()=>{
+    console.log('app is running at port `${proccess.env.PORT}`');
 })
 /** 
  * / --> res = this is working
