@@ -4,12 +4,10 @@ const knex = require('knex');
 const cors = require('cors');
 
 const db = knex({ 
-    client: 'mysql',
+    client: 'pg',
     connection: {
-      host : '192.168.1.73',
-      user : 'root',
-      password : '123456jose',
-      database : 'sflivingwage'
+      connectString : process.env.DATABASE_URL,
+      ssl: true
     }
   });
 db.select('*').from('ourcampaigns').then(data => {
