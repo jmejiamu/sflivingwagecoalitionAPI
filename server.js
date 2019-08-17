@@ -35,7 +35,7 @@ app.get('/ourcampaigns', (req, res)=>{
 })
 
 app.listen(process.env.PORT || 3000,()=>{
-    console.log('app is running at port `${proccess.env.PORT}`');
+    console.log(`app is running at port ${proccess.env.PORT}`);
 })
 /** 
  * / --> res = this is working
