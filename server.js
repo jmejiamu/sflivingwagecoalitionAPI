@@ -6,10 +6,10 @@ const cors = require('cors');
 const db = knex({
     client: 'mysql',
     connection: {
-      host : 'xxx.xxx.x.xx', // localhost or IP
-      user : 'root',
-      password : 'xxxxx', 
-      database : 'sflivingwage'
+      host : 'mysql.livingwage-sf.org', // localhost or IP
+      user : 'livingwagesfapp',
+      password : 'L1v1ngW@g35',
+      database : 'wordscrapedb'
     }
   });
 db.select('*').from('ourcampaigns').then(data => {
