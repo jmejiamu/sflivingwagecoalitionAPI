@@ -71,7 +71,7 @@ app.get('/getinformed', (req, res)=>{
     });
 })
 
-app.listen(3001, '192.168.1.80', ()=>{
+app.listen(3001, '192.168.1.xx', ()=>{
     console.log('app is running at port 3001');
 })
 
