@@ -10,6 +10,8 @@ const bcrypt = require('bcrypt')
 const addabout = require('./routes/post');
 const updateEvents = require('./routes/update');
 const deleteEvents = require('./routes/delete');
+const register = require('./controllers/register');
+
 dotenv.config();
 
 const db = knex({
@@ -146,6 +148,10 @@ app.post('/subscription', (req, res) => {
     })
 
 
+})
+
+app.post('/register', (req, res) => {
+    register.handleRegister(req, res, db, bcrypt)
 })
 
 app.listen(3001, process.env.URLIP, () => {
