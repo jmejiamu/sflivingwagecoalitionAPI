@@ -11,6 +11,7 @@ const addabout = require('./routes/post');
 const updateEvents = require('./routes/update');
 const deleteEvents = require('./routes/delete');
 const register = require('./controllers/register');
+const signin = require('./controllers/signin')
 
 dotenv.config();
 
@@ -153,6 +154,8 @@ app.post('/subscription', (req, res) => {
 app.post('/register', (req, res) => {
     register.handleRegister(req, res, db, bcrypt)
 })
+
+app.post('/signin', signin.handleSignin(db, bcrypt))
 
 app.listen(3001, process.env.URLIP, () => {
     console.log('app is running at port 3001');
