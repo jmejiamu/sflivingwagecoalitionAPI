@@ -4,7 +4,8 @@ const knex = require('knex');
 const cors = require('cors');
 const dotenv = require('dotenv')
 const nodemailer = require('nodemailer');
-const dateformat = require('dateformat')
+const dateformat = require('dateformat');
+const bcrypt = require('bcrypt')
 
 const addabout = require('./routes/post');
 const updateEvents = require('./routes/update');
