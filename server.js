@@ -6,6 +6,7 @@ const dotenv = require('dotenv')
 const nodemailer = require('nodemailer');
 const dateformat = require('dateformat');
 const bcrypt = require('bcrypt')
+const cookieParser = require('cookie-parser');
 
 const addabout = require('./routes/post');
 const updateEvents = require('./routes/update');
@@ -35,9 +36,12 @@ const app = express();
 // this does the same fucntion as body- parse
 // app.use(express.urlencoded({ extended: true }));
 // app.use(express.json());
-
+app.use(bodyParse.urlencoded({ extended: false }));
 app.use(bodyParse.json());
+
 app.use(cors());
+app.use(cookieParser());
+
 
 
 app.get('/about', (req, res) => {
@@ -157,7 +161,7 @@ app.post('/register', (req, res) => {
 
 app.post('/signin', signin.handleSignin(db, bcrypt))
 
-app.listen(3001, process.env.URLIP, () => {
+app.listen(3001, () => {
     console.log('app is running at port 3001');
 })
 

@@ -1,3 +1,12 @@
+const jwt = require('jsonwebtoken');
+//          days|hours|min| sec = 3 days in seconds
+const maxAge = 3 * 24 * 60 * 60;
+const createToken = (id) => {
+    return jwt.sign({ id }, 'SECRET_SF', {
+        expiresIn: maxAge
+    })
+}
+
 const handleRegister = (req, res, db, bcrypt) => {
     const { email, name, password } = req.body;
 
@@ -22,9 +31,12 @@ const handleRegister = (req, res, db, bcrypt) => {
                         name: name,
                     })
                     .then(user => {
+                        const token = createToken(user[0])
+                        res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 })
                         res.json(user[0])
                     })
             })
+
             .then(trx.commit)
             .catch(trx.rollback)
     })
