@@ -1,9 +1,17 @@
+// const express = require('express')
 const jwt = require('jsonwebtoken');
+// const cookieParser = require('cookie-parser');
+
+// const coo = cookieParser()
+// const app = express();
+
+// app.use(cookieParser())
+
 //          days|hours|min| sec = 3 days in seconds
 const maxAge = 3 * 24 * 60 * 60;
 const createToken = (id) => {
     return jwt.sign({ id }, 'SECRET_SF', {
-        expiresIn: maxAge
+        expiresIn: maxAge,
     })
 }
 
@@ -32,8 +40,9 @@ const handleRegister = (req, res, db, bcrypt) => {
                     })
                     .then(user => {
                         const token = createToken(user[0])
-                        res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 })
-                        res.json(user[0])
+                        // res.cookie('jwt', token, { httpOnly: true, })
+                        // return res.json(user[0])
+                        return res.json({ token })
                     })
             })
 

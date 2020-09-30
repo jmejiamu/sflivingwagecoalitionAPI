@@ -7,11 +7,13 @@ const nodemailer = require('nodemailer');
 const dateformat = require('dateformat');
 const bcrypt = require('bcrypt')
 const cookieParser = require('cookie-parser');
+const jwt = require('jsonwebtoken');
+
 
 const addabout = require('./routes/post');
 const updateEvents = require('./routes/update');
 const deleteEvents = require('./routes/delete');
-const register = require('./controllers/register');
+// const register = require('./controllers/register');
 const signin = require('./controllers/signin')
 
 dotenv.config();
@@ -154,12 +156,59 @@ app.post('/subscription', (req, res) => {
 
 
 })
+const maxAge = 3 * 24 * 60 * 60;
+const createToken = (id) => {
+    return jwt.sign({ id }, 'secretkey', {
+        expiresIn: maxAge
+    })
+}
 
-app.post('/register', (req, res) => {
-    register.handleRegister(req, res, db, bcrypt)
+app.post('/register', cookieParser(), (req, res) => {
+    // register.handleRegister(req, res, db, bcrypt)
+
+    const { email, name, password } = req.body;
+
+    if (!email || !name || !password) {
+        return res.status(400).json('incorrect form submission')
+    }
+    const salt = 2
+    const hash = bcrypt.hashSync(password, salt);
+
+    db.transaction(trx => {
+        trx.insert({
+            hash: hash,
+            email: email
+        })
+            .into('login')
+            .returning('email')
+            .then(loginEmail => {
+                return trx('users')
+                    .returning('*')
+                    .insert({
+                        email: email,
+                        name: name,
+                    })
+                    .then(user => {
+                        const token = createToken(user[0])
+                        // res.cookie('jwt', token, { httpOnly: true, })
+                        // res.json(user[0])
+                        return res.status(200).json({ token, user: user[0] })
+                    })
+            })
+
+            .then(trx.commit)
+            .catch(trx.rollback)
+    })
+        .catch(err => res.status(400).json('Unable to regiter'))
+
 })
 
 app.post('/signin', signin.handleSignin(db, bcrypt))
+
+app.get('/cookie', (req, res) => {
+    res.cookie('newUser', true)
+    res.status(200).send('you got a cookie')
+})
 
 app.listen(3001, () => {
     console.log('app is running at port 3001');

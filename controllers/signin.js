@@ -1,3 +1,11 @@
+const jwt = require('jsonwebtoken');
+const maxAge = 3 * 24 * 60 * 60;
+const createToken = (id) => {
+    return jwt.sign({ id }, 'SECRET_SF', {
+        expiresIn: maxAge,
+    })
+}
+
 const handleSignin = (db, bcrypt) => (req, res) => {
     const { email, password } = req.body;
 
@@ -12,7 +20,9 @@ const handleSignin = (db, bcrypt) => (req, res) => {
                 return db.select('*').from('users')
                     .where('email', '=', email)
                     .then(user => {
-                        res.json(user[0])
+                        const token = createToken(user[0])
+                        // res.json(user[0])
+                        res.json({ token, user: user[0] })
                     })
                     .catch(err => res.status(400).json('Unable to get user'))
             } else {
