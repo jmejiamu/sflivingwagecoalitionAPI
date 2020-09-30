@@ -1,9 +1,10 @@
 const jwt = require('jsonwebtoken');
 const maxAge = 3 * 24 * 60 * 60;
 const createToken = (id) => {
-    return jwt.sign({ id }, 'SECRET_SF', {
-        expiresIn: maxAge,
-    })
+    const payload = {
+        user: id
+    }
+    return jwt.sign(payload, 'SECRET_SF', { expiresIn: maxAge, })
 }
 
 const handleSignin = (db, bcrypt) => (req, res) => {
