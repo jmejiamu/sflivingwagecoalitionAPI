@@ -181,9 +181,12 @@ app.get("/isverify", authorization, (req, res) => {
     }
 })
 
-app.get('/dashboard', authorization, (req, res) => {
+// this will get the user info
+app.get('/dashboard', authorization, async (req, res) => {
     try {
-        res.json(req.user)
+        // res.json(req.user)
+        const user = await db.select('name').from('users').where({ id: req.user })
+        res.json(user)
     } catch (error) {
         console.error(error.message);
         res.status(500).json('Server Error')
