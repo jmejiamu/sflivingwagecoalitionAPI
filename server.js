@@ -181,12 +181,12 @@ app.get("/isverify", authorization, (req, res) => {
     }
 })
 
-// this will get the user info
+// this will get the user info it is a private route
 app.get('/dashboard', authorization, async (req, res) => {
     try {
         // res.json(req.user)
         const user = await db.select('name').from('users').where({ id: req.user })
-        res.json(user)
+        res.json(user[0])
     } catch (error) {
         console.error(error.message);
         res.status(500).json('Server Error')

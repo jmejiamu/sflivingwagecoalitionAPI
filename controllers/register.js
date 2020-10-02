@@ -39,7 +39,7 @@ const handleRegister = (req, res, db, bcrypt) => {
                         const token = createToken(user[0])
                         // res.cookie('jwt', token, { httpOnly: true, })
                         // return res.json(user[0])
-                        return res.status(200).json({ token, user: user[0] })
+                        return res.status(200).json({ token })
                     })
             })
 

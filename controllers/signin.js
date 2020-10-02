@@ -21,9 +21,9 @@ const handleSignin = (db, bcrypt) => (req, res) => {
                 return db.select('*').from('users')
                     .where('email', '=', email)
                     .then(user => {
-                        const token = createToken(user[0])
+                        const token = createToken(user[0].id)
                         // res.json(user[0])
-                        res.json({ token, user: user[0] })
+                        res.json({ token })
                     })
                     .catch(err => res.status(400).json('Unable to get user'))
             } else {
