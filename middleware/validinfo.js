@@ -12,6 +12,7 @@ module.exports = (req, res, next) => {
         } else if (!validEmail(email)) {
             return res.status(401).json("Invalid Email");
         }
+
     } else if (req.path === "/signin") {
         if (![email, password].every(Boolean)) {
             return res.status(401).json("Missing Credentials");

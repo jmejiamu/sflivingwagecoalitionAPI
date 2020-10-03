@@ -158,16 +158,23 @@ app.post('/subscription', (req, res) => {
 
 
 })
-const maxAge = 3 * 24 * 60 * 60;
-const createToken = (id) => {
-    const payload = {
-        user: id
-    }
-    return jwt.sign(payload, 'secretkey', { expiresIn: maxAge })
-}
 
-app.post('/register', validinfo, (req, res) => {
-    register.handleRegister(req, res, db, bcrypt)
+app.post('/register', validinfo, async (req, res,) => {
+    const { email, } = req.body;
+    try {
+        console.log(email);
+        const userExist = await db.select('email').from('login').where({ email: email })
+        console.log(userExist);
+        if (userExist.length > 0) {
+            return res.json("user already exist")
+        }
+        register.handleRegister(req, res, db, bcrypt)
+    } catch (error) {
+        console.error(error.message);
+        res.status(400).json("errror")
+    }
+
+
 })
 
 app.post('/signin', validinfo, signin.handleSignin(db, bcrypt))
@@ -177,7 +184,7 @@ app.get("/isverify", authorization, (req, res) => {
         res.json(true)
     } catch (error) {
         console.error(error.message);
-        res.status(500).send("Server Error")
+        res.status(500).json("Server Error")
     }
 })
 
