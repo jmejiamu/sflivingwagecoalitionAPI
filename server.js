@@ -9,6 +9,10 @@ const bcrypt = require('bcrypt')
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 
+// const http = require("http");
+// const path = require("path");
+// const fs = require("fs");
+
 const validinfo = require('./middleware/validinfo');
 const authorization = require('./middleware/authorization');
 
@@ -16,10 +20,12 @@ const addabout = require('./routes/post');
 const updateEvents = require('./routes/update');
 const deleteEvents = require('./routes/delete');
 const register = require('./controllers/register');
-const signin = require('./controllers/signin')
+const signin = require('./controllers/signin');
+const addArt = require('./controllers/addArt');
 
 dotenv.config();
 
+//const mdb = require('knex-mariadb');
 const db = knex({
     client: 'mysql',
     connection: {
@@ -27,11 +33,10 @@ const db = knex({
         user: process.env.USERNAME,
         password: process.env.PASSWORD,
         database: process.env.DATABASE
+
+
     }
 });
-
-
-
 
 // db.select('*').from('about').then(data => {
 //     console.log(data);
@@ -46,6 +51,38 @@ app.use(bodyParse.json());
 app.use(cors());
 app.use(cookieParser());
 
+//multer module, a middleware, handle multipart file request datas.
+var multer  = require('multer');
+
+//intaniate the multer and set up the folder which store the image.
+var upload = multer({dest: __dirname + '/uploads'});
+
+//handle add art picture request
+app.post('/addart',upload.single('photo'),  (req, res) => {
+   
+    const { title,  description  } = req.body;
+    if (!title || !description || !req.file) {
+        return res.status(400).json('Expected format: { title: <String>, description: <String> , photo: <String>}. ')
+    }
+  
+    // console.log(req.file);
+    var path = __dirname + '/uploads/' + req.file.originalname
+    //console.log( path)
+    db.insert
+    ({
+        title: title,
+        path: path,
+        details: '',
+        contact : description,
+        name: '',
+        bid: '',
+        phone_email: ''
+    }).into('art')
+    .then(data => {
+        res.status(200).json({ insterted: " DATA Inserted!" })
+    })
+    .catch(err => res.status(400).json('Unable to add new art work'))
+})
 
 
 app.get('/about', (req, res) => {
