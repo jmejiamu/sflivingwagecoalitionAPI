@@ -21,7 +21,6 @@ const updateEvents = require('./routes/update');
 const deleteEvents = require('./routes/delete');
 const register = require('./controllers/register');
 const signin = require('./controllers/signin');
-const addArt = require('./controllers/addArt');
 
 dotenv.config();
 
@@ -33,7 +32,6 @@ const db = knex({
         user: process.env.USERNAME,
         password: process.env.PASSWORD,
         database: process.env.DATABASE
-
 
     }
 });
@@ -54,8 +52,18 @@ app.use(cookieParser());
 //multer module, a middleware, handle multipart file request datas.
 var multer  = require('multer');
 
+// Set the destination and filename
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, 'C:/xampp/htdocs/img/') //replace the path here 
+    },
+    filename: function (req, file, cb) {
+      cb(null, file.originalname )
+    }
+  })
+
 //intaniate the multer and set up the folder which store the image.
-var upload = multer({dest: __dirname + '/uploads'});
+var upload = multer({ storage : storage });
 
 //handle add art picture request
 app.post('/addart',upload.single('photo'),  (req, res) => {
@@ -66,7 +74,7 @@ app.post('/addart',upload.single('photo'),  (req, res) => {
     }
   
     // console.log(req.file);
-    var path = __dirname + '/uploads/' + req.file.originalname
+    var path =  '/img/' + req.file.originalname
     //console.log( path)
     db.insert
     ({
