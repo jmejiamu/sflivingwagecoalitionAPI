@@ -21,8 +21,8 @@ const updateEvents = require('./routes/update');
 const deleteEvents = require('./routes/delete');
 const register = require('./controllers/register');
 const signin = require('./controllers/signin');
-const addArt = require('./controllers/addArt');
-
+// const addArt = require('./controllers/addArt');
+// console.log(addArt);
 dotenv.config();
 
 //const mdb = require('knex-mariadb');
@@ -52,36 +52,36 @@ app.use(cors());
 app.use(cookieParser());
 
 //multer module, a middleware, handle multipart file request datas.
-var multer  = require('multer');
+var multer = require('multer');
 
 //intaniate the multer and set up the folder which store the image.
-var upload = multer({dest: __dirname + '/uploads'});
+var upload = multer({ dest: __dirname + '/uploads' });
 
 //handle add art picture request
-app.post('/addart',upload.single('photo'),  (req, res) => {
-   
-    const { title,  description  } = req.body;
+app.post('/addart', upload.single('photo'), (req, res) => {
+
+    const { title, description } = req.body;
     if (!title || !description || !req.file) {
         return res.status(400).json('Expected format: { title: <String>, description: <String> , photo: <String>}. ')
     }
-  
+
     // console.log(req.file);
     var path = __dirname + '/uploads/' + req.file.originalname
     //console.log( path)
     db.insert
-    ({
-        title: title,
-        path: path,
-        details: '',
-        contact : description,
-        name: '',
-        bid: '',
-        phone_email: ''
-    }).into('art')
-    .then(data => {
-        res.status(200).json({ insterted: " DATA Inserted!" })
-    })
-    .catch(err => res.status(400).json('Unable to add new art work'))
+        ({
+            title: title,
+            path: path,
+            details: '',
+            contact: description,
+            name: '',
+            bid: '',
+            phone_email: ''
+        }).into('art')
+        .then(data => {
+            res.status(200).json({ insterted: " DATA Inserted!" })
+        })
+        .catch(err => res.status(400).json('Unable to add new art work'))
 })
 
 
