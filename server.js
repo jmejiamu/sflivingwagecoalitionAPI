@@ -28,11 +28,10 @@ dotenv.config();
 const db = knex({
     client: 'mysql',
     connection: {
-        host: '127.0.0.1',
-        user: 'ken',
-        password: 'kit123',
-        database: 'phoneapp'
-
+        host: process.env.HOSTNAME,
+        user: process.env.USERNAME,
+        password: process.env.PASSWORD,
+        database: process.env.DATABASE
 
     }
 });
