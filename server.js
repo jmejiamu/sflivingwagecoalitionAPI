@@ -28,10 +28,11 @@ dotenv.config();
 const db = knex({
     client: 'mysql',
     connection: {
-        host: process.env.HOSTNAME,
-        user: process.env.USERNAME,
-        password: process.env.PASSWORD,
-        database: process.env.DATABASE
+        host: '127.0.0.1',
+        user: 'ken',
+        password: 'kit123',
+        database: 'phoneapp'
+
 
     }
 });
@@ -68,13 +69,13 @@ var upload = multer({ storage : storage });
 //handle add art picture request
 app.post('/addart',upload.single('photo'),  (req, res) => {
    
-    const { title,  description  } = req.body;
+    const { title,  description , minimunbid} = req.body;
     if (!title || !description || !req.file) {
         return res.status(400).json('Expected format: { title: <String>, description: <String> , photo: <String>}. ')
     }
   
     // console.log(req.file);
-    var path =  '/img/' + req.file.originalname
+    var path =  'http://localhost/img/' + req.file.originalname
     //console.log( path)
     db.insert
     ({
@@ -83,7 +84,7 @@ app.post('/addart',upload.single('photo'),  (req, res) => {
         details: '',
         contact : description,
         name: '',
-        bid: '',
+        bid: minimunbid,
         phone_email: ''
     }).into('art')
     .then(data => {
