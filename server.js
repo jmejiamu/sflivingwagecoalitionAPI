@@ -73,7 +73,7 @@ app.post('/addart', upload.single('photo'), (req, res) => {
     }
 
     // console.log(req.file);
-    var path = '/img/' + req.file.originalname
+    var path = 'http://157.245.184.202/images/Art/' + req.file.originalname
     //console.log( path)
     db.insert
         ({
@@ -154,10 +154,6 @@ app.get('/getinformed', (req, res) => {
 // - adding subscription
 app.post('/subscription', (req, res) => {
     const { id, full_name, email, phone, notes } = req.body
-    // console.log("id : ", id, 
-    // " Full Name: ", full_name,
-    // " E-Mail: ", email,
-    // "  Phone: ", phone);
     db.insert
         ({
             id: id,
@@ -169,37 +165,6 @@ app.post('/subscription', (req, res) => {
         .then(data => {
             res.status(200).json({ insterted: "Insert DATA!" })
         })
-
-    let transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: process.env.USEREMAIL,
-            pass: process.env.USERPASSWORD
-        }
-    });
-
-    let mailOptions = {
-        from: process.env.USEREMAIL,
-        to: process.env.USEREMAIL,
-
-        subject: `Name: ${full_name}`,
-        html: `<h1>User Information</h1>
-              <h3>Name: ${full_name}</h3><br>
-              <h3>E-mail: ${email}</h3><br>
-              <h3>Phone: ${phone}</h3><br>
-              <h3>Notes: ${notes}</h3>`
-    };
-
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            console.log(error);
-            res.status(404).send(error);
-        } else {
-            console.log('Email sent: ' + info.response);
-            res.status(200).send('Data was sent!!')
-        }
-    })
-
 
 })
 
