@@ -65,9 +65,15 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage });
 
 //handle add art picture request
+<<<<<<< HEAD
 app.post('/addart', upload.single('photo'), (req, res) => {
 
     const { title, description } = req.body;
+=======
+app.post('/addart',upload.single('photo'),  (req, res) => {
+
+    const { title,  description , minimunbid} = req.body;
+>>>>>>> 4faf3cd3e01d1a2ce21f4ea6351bea65ef9ad7a8
     if (!title || !description || !req.file) {
         return res.status(400).json('Expected format: { title: <String>, description: <String> , photo: <String>}. ')
     }
@@ -82,7 +88,7 @@ app.post('/addart', upload.single('photo'), (req, res) => {
             details: '',
             contact: description,
             name: '',
-            bid: '',
+            bid: minimunbid,
             phone_email: ''
         }).into('art')
         .then(data => {
