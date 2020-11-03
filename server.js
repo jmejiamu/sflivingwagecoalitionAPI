@@ -21,7 +21,8 @@ const updateEvents = require('./routes/update');
 const deleteEvents = require('./routes/delete');
 const register = require('./controllers/register');
 const signin = require('./controllers/signin');
-const deleteArt = require('./routes/delete')
+const deleteArt = require('./routes/delete');
+const deleteAssistance = require('./routes/delete');
 dotenv.config();
 
 //const mdb = require('knex-mariadb');
@@ -133,6 +134,10 @@ app.delete('/deleteEvent/:event_id', (req, res) => {
 
 app.delete('/deleteart/:art_id', (req, res) => {
     deleteArt.deleteArt(req, res, db);
+})
+
+app.delete('/deleteassistance/:assis_id', (req, res) => {
+    deleteAssistance.deleteAssistance(req, res, db)
 })
 
 app.put('/updateEvent/:event_id', (req, res) => {

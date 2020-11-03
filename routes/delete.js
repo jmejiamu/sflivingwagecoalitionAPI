@@ -18,7 +18,18 @@ const deleteArt = async (req, res, db) => {
     }
 }
 
+const deleteAssistance = async (req, res, db) => {
+    try {
+        const { assis_id } = req.params;
+        const deleteData = await db('assistance').where({ id: assis_id }).del()
+        res.status(200).send({ data: 'delete' })
+    } catch (error) {
+        console.error(error.message);
+    }
+}
+
 module.exports = {
     deleteEvent,
-    deleteArt
+    deleteArt,
+    deleteAssistance
 }
