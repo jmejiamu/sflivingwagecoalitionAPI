@@ -21,6 +21,7 @@ const updateEvents = require('./routes/update');
 const deleteEvents = require('./routes/delete');
 const register = require('./controllers/register');
 const signin = require('./controllers/signin');
+const deleteArt = require('./routes/delete')
 dotenv.config();
 
 //const mdb = require('knex-mariadb');
@@ -129,6 +130,10 @@ app.put('/updateart/:art_id', upload.single('photo'), async (req, res) => {
 app.delete('/deleteEvent/:event_id', (req, res) => {
     deleteEvents.deleteEvent(req, res, db);
 });
+
+app.delete('/deleteart/:art_id', (req, res) => {
+    deleteArt.deleteArt(req, res, db);
+})
 
 app.put('/updateEvent/:event_id', (req, res) => {
     updateEvents.updateEvent(req, res, db);
