@@ -98,6 +98,30 @@ app.get('/about', (req, res) => {
     });
 
 })
+
+app.put('/updateart/:art_id', upload.single('photo'), async (req, res) => {
+    try {
+        var path = 'http://157.245.184.202/images/Art/' + req.file.originalname
+        const { art_id } = req.params;
+        const {
+            title,
+            details,
+            contact,
+        } = req.body;
+
+        const updateData = await db('art').update({
+            title: title,
+            path: path,
+            details: details,
+            contact: contact,
+        }).where({ id: art_id })
+        res.status(200).send({ data: "Update data" })
+    } catch (error) {
+        console.error(error.message);
+    }
+})
+
+
 // app.post('/addabout', (req, res) => {
 //     addabout.newPost(req, res, db);
 // });
