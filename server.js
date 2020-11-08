@@ -101,6 +101,12 @@ app.get('/about', (req, res) => {
 
 })
 
+app.get('/salesdetail', (req, res) => {
+    db.select('*').from('details').then(data => {
+        res.send(data);
+    })
+})
+
 app.put('/updateart/:art_id', upload.single('photo'), async (req, res) => {
     try {
         var path = 'http://157.245.184.202/images/Art/' + req.file.originalname
