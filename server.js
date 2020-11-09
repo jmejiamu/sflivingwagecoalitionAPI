@@ -77,19 +77,31 @@ app.post('/addart', upload.single('photo'), (req, res) => {
     // console.log(req.file);
     var path = 'http://157.245.184.202/images/Art/' + req.file.originalname
     //console.log( path)
-    db.insert
-        ({
-            title: title,
-            path: path,
-            details: '',
-            contact: description,
-            name: '',
-            bid: minimunbid,
-            phone_email: ''
-        }).into('art')
-        .then(data => {
-            res.status(200).json({ insterted: " DATA Inserted!" })
-        })
+    db.transaction(trx => {
+        trx.insert
+            ({
+                title: title,
+                path: path,
+                details: '',
+                contact: description,
+                name: '',
+                bid: minimunbid,
+                phone_email: ''
+            }).into('art')
+            .returning('*')
+            .then(dataDes => {
+                return trx('details')
+                    .insert({
+                        author_image: path,
+                        title: title
+                    })
+                    .then(data => {
+                        res.status(200).json({ insterted: " DATA Inserted!" })
+                    })
+            })
+            .then(trx.commit)
+            .catch(trx.rollback)
+    })
         .catch(err => res.status(400).json('Unable to add new art work'))
 })
 
