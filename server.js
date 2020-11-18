@@ -21,7 +21,8 @@ const updateEvents = require('./routes/update');
 const deleteEvents = require('./routes/delete');
 const register = require('./controllers/register');
 const signin = require('./controllers/signin');
-
+const deleteArt = require('./routes/delete');
+const deleteAssistance = require('./routes/delete');
 dotenv.config();
 
 //const mdb = require('knex-mariadb');
@@ -50,46 +51,46 @@ app.use(cors());
 app.use(cookieParser());
 
 //multer module, a middleware, handle multipart file request datas.
-var multer  = require('multer');
+var multer = require('multer');
 
 // Set the destination and filename
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, 'C:/xampp/htdocs/img/') //replace the path here 
+        cb(null, 'C:/xampp/htdocs/img/') //replace the path here 
     },
     filename: function (req, file, cb) {
-      cb(null, file.originalname )
+        cb(null, file.originalname)
     }
-  })
+})
 
 //intaniate the multer and set up the folder which store the image.
-var upload = multer({ storage : storage });
+var upload = multer({ storage: storage });
 
 //handle add art picture request
-app.post('/addart',upload.single('photo'),  (req, res) => {
-   
-    const { title,  description , minimunbid} = req.body;
+app.post('/addart', upload.single('photo'), (req, res) => {
+
+    const { title, description, minimunbid } = req.body;
     if (!title || !description || !req.file) {
         return res.status(400).json('Expected format: { title: <String>, description: <String> , photo: <String>}. ')
     }
-  
+
     // console.log(req.file);
-    var path =  'http://localhost/img/' + req.file.originalname
+    var path = 'http://157.245.184.202/images/Art/' + req.file.originalname
     //console.log( path)
     db.insert
-    ({
-        title: title,
-        path: path,
-        details: '',
-        contact : description,
-        name: '',
-        bid: minimunbid,
-        phone_email: ''
-    }).into('art')
-    .then(data => {
-        res.status(200).json({ insterted: " DATA Inserted!" })
-    })
-    .catch(err => res.status(400).json('Unable to add new art work'))
+        ({
+            title: title,
+            path: path,
+            details: '',
+            contact: description,
+            name: '',
+            bid: minimunbid,
+            phone_email: ''
+        }).into('art')
+        .then(data => {
+            res.status(200).json({ insterted: " DATA Inserted!" })
+        })
+        .catch(err => res.status(400).json('Unable to add new art work'))
 })
 
 
@@ -100,6 +101,36 @@ app.get('/about', (req, res) => {
     });
 
 })
+
+app.get('/salesdetail', (req, res) => {
+    db.select('*').from('details').then(data => {
+        res.send(data);
+    })
+})
+
+app.put('/updateart/:art_id', upload.single('photo'), async (req, res) => {
+    try {
+        var path = 'http://157.245.184.202/images/Art/' + req.file.originalname
+        const { art_id } = req.params;
+        const {
+            title,
+            details,
+            contact,
+        } = req.body;
+
+        const updateData = await db('art').update({
+            title: title,
+            path: path,
+            details: details,
+            contact: contact,
+        }).where({ id: art_id })
+        res.status(200).send({ data: "Update data" })
+    } catch (error) {
+        console.error(error.message);
+    }
+})
+
+
 // app.post('/addabout', (req, res) => {
 //     addabout.newPost(req, res, db);
 // });
@@ -107,6 +138,14 @@ app.get('/about', (req, res) => {
 app.delete('/deleteEvent/:event_id', (req, res) => {
     deleteEvents.deleteEvent(req, res, db);
 });
+
+app.delete('/deleteart/:art_id', (req, res) => {
+    deleteArt.deleteArt(req, res, db);
+})
+
+app.delete('/deleteassistance/:assis_id', (req, res) => {
+    deleteAssistance.deleteAssistance(req, res, db)
+})
 
 app.put('/updateEvent/:event_id', (req, res) => {
     updateEvents.updateEvent(req, res, db);
@@ -156,10 +195,6 @@ app.get('/getinformed', (req, res) => {
 // - adding subscription
 app.post('/subscription', (req, res) => {
     const { id, full_name, email, phone, notes } = req.body
-    // console.log("id : ", id, 
-    // " Full Name: ", full_name,
-    // " E-Mail: ", email,
-    // "  Phone: ", phone);
     db.insert
         ({
             id: id,
@@ -171,37 +206,6 @@ app.post('/subscription', (req, res) => {
         .then(data => {
             res.status(200).json({ insterted: "Insert DATA!" })
         })
-
-    let transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: process.env.USEREMAIL,
-            pass: process.env.USERPASSWORD
-        }
-    });
-
-    let mailOptions = {
-        from: process.env.USEREMAIL,
-        to: process.env.USEREMAIL,
-
-        subject: `Name: ${full_name}`,
-        html: `<h1>User Information</h1>
-              <h3>Name: ${full_name}</h3><br>
-              <h3>E-mail: ${email}</h3><br>
-              <h3>Phone: ${phone}</h3><br>
-              <h3>Notes: ${notes}</h3>`
-    };
-
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            console.log(error);
-            res.status(404).send(error);
-        } else {
-            console.log('Email sent: ' + info.response);
-            res.status(200).send('Data was sent!!')
-        }
-    })
-
 
 })
 
