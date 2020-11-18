@@ -93,6 +93,7 @@ app.post('/addart',upload.single('photo'),  (req, res) => {
 })
 
 
+
 app.get('/about', (req, res) => {
     db.select('*').from('about').then(data => {
         res.send(data);
