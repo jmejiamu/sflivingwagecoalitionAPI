@@ -29,10 +29,10 @@ dotenv.config();
 const db = knex({
     client: 'mysql',
     connection: {
-        host: process.env.HOSTNAME,
-        user: process.env.USERNAME,
-        password: process.env.PASSWORD,
-        database: process.env.DATABASE
+        host: '127.0.0.1',
+        user: 'ken',
+        password: 'kit123',
+        database: 'phoneapp'
 
     }
 });
@@ -91,6 +91,26 @@ app.post('/addart', upload.single('photo'), (req, res) => {
             res.status(200).json({ insterted: " DATA Inserted!" })
         })
         .catch(err => res.status(400).json('Unable to add new art work'))
+})
+
+//handle insert details request
+app.post('/addetail',upload.single('photo'),  (req, res) => {
+    const { long_description } = req.body;
+    if ( !long_description || !req.file) {
+        return res.status(400).json('Expected format: { long_description: <String> , photo: <String>}. ')
+    }
+    var path =  'http://157.245.184.202/images/Art/' + req.file.originalname
+    db.insert
+    ({
+      
+        long_description : long_description,
+        author_image:path 
+
+    }).into('details')
+    .then(data => {
+        res.status(200).json({ insterted: " DATA Inserted!" })
+    })
+    .catch(err => res.status(400).json('Unable to add new art work'))
 })
 
 
