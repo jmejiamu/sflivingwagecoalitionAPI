@@ -241,7 +241,7 @@ app.post('/artsbid', (req, res) => {
             .update({
                 name: req.body.name,
                 bid: req.body.bid,
-                phone_email: req.body.phone_email
+                phone_email: req.body.phoneEmail
             })
             .into('art')
             .returning('name')
