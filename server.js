@@ -228,6 +228,44 @@ app.post('/subscription', (req, res) => {
 
 })
 
+app.post('/artsbid', (req, res) => {
+    // db.where({ id: req.body.id })
+    //     .update({ name: req.body.name, bid: req.body.bid, phone_email: req.body.phoneEmail })
+    //     .into('art')
+    //     .then(data => {
+    //         res.status(200).send("Data updated")
+    //     })
+
+    db.transaction(trx => {
+        trx.where({ id: req.body.id })
+            .update({
+                name: req.body.name,
+                bid: req.body.bid,
+                phone_email: req.body.phone_email
+            })
+            .into('art')
+            .returning('name')
+            .then(userData => {
+                return trx('allbids')
+                    .returning('*')
+                    .insert({
+                        title: req.body.title,
+                        name: req.body.name,
+                        bid: req.body.bid,
+                        phone_email: req.body.phone_email
+                    })
+                    .then(d => {
+                        return res.status(200).json({ data: "inserted" })
+                    })
+            })
+            .then(trx.commit)
+            .catch(trx.rollback)
+    })
+        .catch(err => res.status(400).json({ data: 'ERROR' }))
+
+})
+
+
 app.post('/register', validinfo, async (req, res,) => {
     const { email, } = req.body;
     try {
