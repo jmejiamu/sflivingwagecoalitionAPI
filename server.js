@@ -93,6 +93,24 @@ app.post('/addart', upload.single('photo'), (req, res) => {
         .catch(err => res.status(400).json('Unable to add new art work'))
 })
 
+app.put('/updateCloseDate', async (req, res) => {
+    try {
+        // var category =  req.category
+        // const { art_id } = req.params;
+        const {
+            closeDate,
+            category,
+        } = req.body;
+
+        const updateData = await db(category).update({
+            closeDate: closeDate,
+        })
+        res.status(200).send({ data: "Update data" })
+    } catch (error) {
+        console.error(error.message);
+    }
+})
+
 //handle insert details request
 app.post('/addetail', upload.single('photo'), (req, res) => {
     const { long_description } = req.body;
