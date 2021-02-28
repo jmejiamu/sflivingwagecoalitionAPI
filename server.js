@@ -29,11 +29,10 @@ dotenv.config();
 const db = knex({
     client: 'mysql',
     connection: {
-        host: process.env.HOSTNAME,
-        user: process.env.USERNAME,
-        password: process.env.PASSWORD,
-        database: process.env.DATABASE
-
+        host: "127.0.0.1" ,
+        user: "ken",
+        password: "kit123",
+        database: "phoneapp"
 
     }
 });
@@ -259,7 +258,7 @@ app.post('/artsbid', (req, res) => {
         trx.where({ id: req.body.id })
             .update({
                 name: req.body.name,
-                bid: req.body.bid,
+                lastbid: req.body.bid,
                 phone_email: req.body.phoneEmail
             })
             .into('art')
@@ -270,7 +269,7 @@ app.post('/artsbid', (req, res) => {
                     .insert({
                         title: req.body.title,
                         name: req.body.name,
-                        lastbid: req.body.bid,
+                        bid: req.body.bid,
                         phone_email: req.body.phone_email
                     })
                     .then(d => {
