@@ -269,7 +269,7 @@ app.post('/artsbid', (req, res) => {
                     .insert({
                         title: req.body.title,
                         name: req.body.name,
-                        bid: req.body.bid,
+                        lastbid: req.body.bid,
                         phone_email: req.body.phone_email
                     })
                     .then(d => {
