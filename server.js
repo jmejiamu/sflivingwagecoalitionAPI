@@ -302,7 +302,26 @@ app.post('/register', validinfo, async (req, res,) => {
 
 })
 
-app.post('/signin', validinfo, signin.handleSignin(db, bcrypt))
+app.post('/signin', validinfo, async (req, res) =>{
+    const {email} = req.body;
+    try{
+        const status = await db.select('status').from('users').where({email: email});
+
+        console.log("status,",status);
+    
+        if(status[0].status === "pending"){
+            return res.status(400).json({err: "Please verify your account in your email first!"});
+        }
+        
+        signin.handleSignin(req, res, db, bcrypt);
+
+   }catch(err){
+       res.status(400).json({err: err.message});
+   }
+}
+)
+
+// app.post('/signin', validinfo, signin.handleSignin(db, bcrypt))
 
 app.get("/isverify", authorization, (req, res) => {
     try {
@@ -333,13 +352,15 @@ app.get('/verifyEmail/:email', async (req, res) =>{
     try{
         const userExist = await db.select('Id').from('login').where({email: email});
 
-        //console.log('try,',userExist);
+        console.log('try,',userExist);
 
         if(userExist.length===0){
             return res.json("The user is not exist!");
         }
        
         //console.log("payload,", userExist[0].Id);
+
+        const updateStatus = await db('users').update({status: 'active'}).where({email: email});
         
         const payload = {
             user: userExist[0].Id

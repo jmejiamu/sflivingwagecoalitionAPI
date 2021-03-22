@@ -1,3 +1,4 @@
+const { json } = require('body-parser');
 const jwt = require('jsonwebtoken');
 const maxAge = 45 * 60;
 const createToken = (id) => {
@@ -7,12 +8,15 @@ const createToken = (id) => {
     return jwt.sign(payload, 'SECRET_SF', { expiresIn: maxAge, })
 }
 
-const handleSignin = (db, bcrypt) => (req, res) => {
+const handleSignin = (req, res, db, bcrypt) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
         return res.status(400).json('Incorrect form submission')
     }
+    
+    console.log("login,", email, password);
+    
     db.select('email', 'hash').from('login')
         .where('email', '=', email)
         .then(data => {
