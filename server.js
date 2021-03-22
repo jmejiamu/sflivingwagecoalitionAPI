@@ -29,11 +29,10 @@ dotenv.config();
 const db = knex({
     client: 'mysql',
     connection: {
-        host: "127.0.0.1" ,
-        user: "ken",
-        password: "kit123",
-        database: "phoneapp"
-
+        host: "127.0.0.1",
+        user: "root",
+        password: "Jermaine2010",
+        database: "ky"
     }
 });
 
@@ -65,6 +64,7 @@ var storage = multer.diskStorage({
 
 //intaniate the multer and set up the folder which store the image.
 var upload = multer({ storage: storage });
+
 
 //handle add art picture request
 app.post('/addart', upload.single('photo'), (req, res) => {
@@ -287,16 +287,16 @@ app.post('/artsbid', (req, res) => {
 app.post('/register', validinfo, async (req, res,) => {
     const { email, } = req.body;
     try {
-        console.log(email);
+        console.log("outside,", email);
         const userExist = await db.select('email').from('login').where({ email: email })
-        console.log(userExist);
+        console.log("userExist,", userExist);
         if (userExist.length > 0) {
             return res.json("user already exist")
         }
-        register.handleRegister(req, res, db, bcrypt)
+        register.handleRegister(req, res, db, bcrypt);
     } catch (error) {
         console.error(error.message);
-        res.status(400).json("errror")
+        res.status(400).json("error")
     }
 
 
@@ -324,6 +324,37 @@ app.get('/dashboard', authorization, async (req, res) => {
         res.status(500).json('Server Error')
     }
 })
+
+app.get('/verifyEmail/:email', async (req, res) =>{
+    const email = req.params.email;
+    
+    console.log('verify,',email);
+    
+    try{
+        const userExist = await db.select('Id').from('login').where({email: email});
+
+        //console.log('try,',userExist);
+
+        if(userExist.length===0){
+            return res.json("The user is not exist!");
+        }
+       
+        //console.log("payload,", userExist[0].Id);
+        
+        const payload = {
+            user: userExist[0].Id
+        }
+
+        console.log("payload,", payload);
+
+        const token = jwt.sign(payload, process.env.JWT_TOKEN, {expiresIn: 45 * 60});
+
+        res.json({token, msg: "User verification sucess!"});
+    }catch(err){
+        return res.json({err: err.message});
+    }
+});
+
 
 app.listen(3001, () => {
     console.log('app is running at port 3001');
