@@ -15,7 +15,6 @@ const handleSignin = (req, res, db, bcrypt) => {
         return res.status(400).json('Incorrect form submission')
     }
     
-    console.log("login,", email, password);
     
     db.select('email', 'hash').from('login')
         .where('email', '=', email)
@@ -25,6 +24,7 @@ const handleSignin = (req, res, db, bcrypt) => {
                 return db.select('*').from('users')
                     .where('email', '=', email)
                     .then(user => {
+                        
                         const token = createToken(user[0].id)
                         // res.json(user[0])
                         res.json({ token })
