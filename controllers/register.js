@@ -67,7 +67,7 @@ const handleRegister = (req, res, db, bcrypt) => {
                                    <h1>Email Confirmation</h1>
                                    <h2>Hello, ${name}</h2>
                                    <p>Thank you for subscribing. Please confirm your email by clicking on the following link</p>
-                                   <a href=https://localhost:3000/comfirm/${email}>Click here</a>`
+                                   <a href=http://localhost:3000/comfirm/${email}>Click here</a>`
                         })
                         
                         res.status(200).json({
