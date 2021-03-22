@@ -355,7 +355,7 @@ app.get('/verifyEmail/:email', async (req, res) =>{
         console.log('try,',userExist);
 
         if(userExist.length===0){
-            return res.json("The user is not exist!");
+            return res.json({err: "The user is not exist!"});
         }
        
         //console.log("payload,", userExist[0].Id);
