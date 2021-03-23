@@ -308,15 +308,19 @@ app.post('/signin', validinfo, async (req, res) =>{
         const status = await db.select('status').from('users').where({email: email});
 
         console.log("status,",status);
+
+        if(status.length === 0){
+            return res.status(400).json("The user is not exist!")
+        }
     
         if(status[0].status === "pending"){
-            return res.status(400).json({err: "Please verify your account in your email first!"});
+            return res.status(400).json("Please verify your account in your email first!");
         }
         
         signin.handleSignin(req, res, db, bcrypt);
 
    }catch(err){
-       res.status(400).json({err: err.message});
+       res.status(400).json("error!");
    }
 }
 )
@@ -362,15 +366,15 @@ app.get('/verifyEmail/:email', async (req, res) =>{
 
         const updateStatus = await db('users').update({status: 'active'}).where({email: email});
         
-        const payload = {
-            user: userExist[0].Id
-        }
+        // const payload = {
+        //     user: userExist[0].Id
+        // }
 
-        console.log("payload,", payload);
+        // console.log("payload,", payload);
 
-        const token = jwt.sign(payload, process.env.JWT_TOKEN, {expiresIn: 45 * 60});
+        // const token = jwt.sign(payload, process.env.JWT_TOKEN, {expiresIn: 45 * 60});
 
-        res.json({token, msg: "User verification sucess!"});
+        res.json({msg: "User verification sucess!"});
     }catch(err){
         return res.json({err: err.message});
     }
