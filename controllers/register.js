@@ -16,10 +16,22 @@ const maxAge = 45 * 60;
 //         expiresIn: maxAge,
 //     })
 // }
+const idGenerator = () => {
+    let randomString = "";
+    let string = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
 
+    for(let i = 0; i < 21; i++){
+        let randomIndex = Math.random() * (string.length - 1);
+        randomString = randomString + string[Math.round(randomIndex)];
+    }
+
+    return randomString;
+}
 
 const handleRegister = (req, res, db, bcrypt) => {
     const { email, name, password } = req.body;
+    const confirmationId = idGenerator();
+    
     if (!email || !name || !password) {
         return res.status(400).json('incorrect form submission')
     }
@@ -27,12 +39,13 @@ const handleRegister = (req, res, db, bcrypt) => {
     const salt = 10
     const hash = bcrypt.hashSync(password, salt);
 
-    console.log("register handler,", hash, email, name);
+    console.log("register handler,", hash, email, name, confirmationId);
 
     db.transaction(trx => {
         trx.insert({
             hash: hash,
-            email: email
+            email: email,
+            confirmationId: confirmationId
         })
             .into('login')
             .returning('email')
@@ -67,7 +80,7 @@ const handleRegister = (req, res, db, bcrypt) => {
                                    <h1>Email Confirmation</h1>
                                    <h2>Hello, ${name}</h2>
                                    <p>Thank you for subscribing. Please confirm your email by clicking on the following link</p>
-                                   <a href=http://localhost:3000/comfirm/${email}>Click here</a>`
+                                   <a href=http://localhost:3000/comfirm/${confirmationId}>Click here</a>`
                         })
                         
                         res.status(200).json({

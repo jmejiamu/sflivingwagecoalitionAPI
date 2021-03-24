@@ -348,13 +348,13 @@ app.get('/dashboard', authorization, async (req, res) => {
     }
 })
 
-app.get('/verifyEmail/:email', async (req, res) =>{
-    const email = req.params.email;
+app.get('/verifyEmail/:confirmationId', async (req, res) =>{
+    const confirmationId = req.params.confirmationId;
     
-    console.log('verify,',email);
+    console.log('verify,',confirmationId);
     
     try{
-        const userExist = await db.select('Id').from('login').where({email: email});
+        const userExist = await db.select('email').from('login').where({confirmationId: confirmationId});
 
         console.log('try,',userExist);
 
@@ -362,9 +362,9 @@ app.get('/verifyEmail/:email', async (req, res) =>{
             return res.json({err: "The user is not exist!"});
         }
        
-        //console.log("payload,", userExist[0].Id);
+        console.log("payload,", userExist[0].email);
 
-        const updateStatus = await db('users').update({status: 'active'}).where({email: email});
+        const updateStatus = await db('users').update({status: 'active'}).where({email: userExist[0].email});
         
         // const payload = {
         //     user: userExist[0].Id
