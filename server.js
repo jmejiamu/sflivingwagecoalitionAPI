@@ -365,6 +365,7 @@ app.get('/verifyEmail/:confirmationId', async (req, res) =>{
         console.log("payload,", userExist[0].email);
 
         const updateStatus = await db('users').update({status: 'active'}).where({email: userExist[0].email});
+        const deleteConfirmationId = await db('login').update({confirmationId: null}).where({email: userExist[0].email});
         
         // const payload = {
         //     user: userExist[0].Id
