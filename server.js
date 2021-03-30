@@ -29,10 +29,10 @@ dotenv.config();
 const db = knex({
     client: 'mysql',
     connection: {
-        host: "127.0.0.1",
-        user: "root",
-        password: "Jermaine2010",
-        database: "ky"
+        host: process.env.HOSTNAME,
+        user: process.env.USERNAME,
+        password: process.env.PASSWORD,
+        database: process.env.DATABASE
     }
 });
 
@@ -246,19 +246,47 @@ app.post('/subscription', (req, res) => {
 
 })
 
+app.post('/booksbid', (req, res) => {
+
+
+    const { id, bid, name, phoneEmail, title } = req.body;
+    db.transaction(trx => {
+        trx.where({ id: id })
+            .update({
+                name: name,
+                bid: bid,
+                phone_email: phoneEmail
+            })
+            .into('pictures')
+            .returning('name')
+            .then(useData => {
+                return trx('allbids')
+                    .returning('*')
+                    .insert({
+                        title: title,
+                        name: name,
+                        bid: bid,
+                        phone_email: phoneEmail
+                    })
+                    .then(d => {
+                        return res.status(200).json({ data: "inserted" })
+                    })
+            })
+            .then(trx.commit)
+            .catch(trx.rollback)
+
+    })
+        .catch(err => res.status(400).json({ data: "ERROR" }))
+
+})
+
 app.post('/artsbid', (req, res) => {
-    // db.where({ id: req.body.id })
-    //     .update({ name: req.body.name, bid: req.body.bid, phone_email: req.body.phoneEmail })
-    //     .into('art')
-    //     .then(data => {
-    //         res.status(200).send("Data updated")
-    //     })
 
     db.transaction(trx => {
         trx.where({ id: req.body.id })
             .update({
                 name: req.body.name,
-                bid: req.body.bid,
+                lastbid: req.body.bid,
                 phone_email: req.body.phoneEmail
             })
             .into('art')
@@ -282,6 +310,104 @@ app.post('/artsbid', (req, res) => {
         .catch(err => res.status(400).json({ data: 'ERROR' }))
 
 })
+
+app.post('/cdsbid', (req, res) => {
+
+    const { id, bid, name, phoneEmail, title } = req.body;
+    db.transaction(trx => {
+        trx.where({ id: id })
+            .update({
+                name: name,
+                bid: bid,
+                phone_email: phoneEmail
+            })
+            .into('cds')
+            .returning('name')
+            .then(useData => {
+                return trx('allbids')
+                    .returning('*')
+                    .insert({
+                        title: title,
+                        name: name,
+                        bid: bid,
+                        phone_email: phoneEmail
+                    })
+                    .then(d => {
+                        return res.status(200).json({ data: "inserted" })
+                    })
+            })
+            .then(trx.commit)
+            .catch(trx.rollback)
+
+    })
+        .catch(err => res.status(400).json({ data: "ERROR" }))
+})
+
+app.post('/dvdsbid', (req, res) => {
+
+    const { id, bid, name, phoneEmail, title } = req.body;
+    db.transaction(trx => {
+        trx.where({ id: id })
+            .update({
+                name: name,
+                bid: bid,
+                phone_email: phoneEmail
+            })
+            .into('dvds')
+            .returning('name')
+            .then(useData => {
+                return trx('allbids')
+                    .returning('*')
+                    .insert({
+                        title: title,
+                        name: name,
+                        bid: bid,
+                        phone_email: phoneEmail
+                    })
+                    .then(d => {
+                        return res.status(200).json({ data: "inserted" })
+                    })
+            })
+            .then(trx.commit)
+            .catch(trx.rollback)
+
+    })
+        .catch(err => res.status(400).json({ data: "ERROR" }))
+})
+
+app.post('/photosbid', (req, res) => {
+
+
+    const { id, bid, name, phoneEmail, title } = req.body;
+    db.transaction(trx => {
+        trx.where({ id: id })
+            .update({
+                name: name,
+                bid: bid,
+                phone_email: phoneEmail
+            })
+            .into('photos')
+            .returning('name')
+            .then(useData => {
+                return trx('allbids')
+                    .returning('*')
+                    .insert({
+                        title: title,
+                        name: name,
+                        bid: bid,
+                        phone_email: phoneEmail
+                    })
+                    .then(d => {
+                        return res.status(200).json({ data: "inserted" })
+                    })
+            })
+            .then(trx.commit)
+            .catch(trx.rollback)
+
+    })
+        .catch(err => res.status(400).json({ data: "ERROR" }))
+})
+
 
 
 app.post('/register', validinfo, async (req, res,) => {
