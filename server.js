@@ -29,10 +29,14 @@ dotenv.config();
 const db = knex({
     client: 'mysql',
     connection: {
-        host: process.env.HOSTNAME,
-        user: process.env.USERNAME,
-        password: process.env.PASSWORD,
-        database: process.env.DATABASE
+        // host: process.env.HOSTNAME,
+        // user: process.env.USERNAME,
+        // password: process.env.PASSWORD,
+        // database: process.env.DATABASE
+        host: "127.0.0.1" ,
+        user: "ken",
+        password: "kit123",
+        database: "phoneapp"
 
     }
 });
@@ -261,7 +265,7 @@ app.post('/artsbid', (req, res) => {
                 lastbid: req.body.bid,
                 phone_email: req.body.phoneEmail
             })
-            .into('art')
+            .into(req.body.category)
             .returning('name')
             .then(userData => {
                 return trx('allbids')
@@ -280,6 +284,7 @@ app.post('/artsbid', (req, res) => {
             .catch(trx.rollback)
     })
         .catch(err => res.status(400).json({ data: 'ERROR' }))
+        
 
 })
 
@@ -324,6 +329,7 @@ app.get('/dashboard', authorization, async (req, res) => {
         res.status(500).json('Server Error')
     }
 })
+
 
 app.listen(3001, () => {
     console.log('app is running at port 3001');
