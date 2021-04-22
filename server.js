@@ -37,7 +37,6 @@ const db = knex({
         user: "ken",
         password: "kit123",
         database: "phoneapp"
-
     }
 });
 
@@ -69,6 +68,7 @@ var storage = multer.diskStorage({
 
 //intaniate the multer and set up the folder which store the image.
 var upload = multer({ storage: storage });
+
 
 //handle add art picture request
 app.post('/addart', upload.single('photo'), (req, res) => {
@@ -250,13 +250,41 @@ app.post('/subscription', (req, res) => {
 
 })
 
+app.post('/booksbid', (req, res) => {
+
+
+    const { id, bid, name, phoneEmail, title } = req.body;
+    db.transaction(trx => {
+        trx.where({ id: id })
+            .update({
+                name: name,
+                bid: bid,
+                phone_email: phoneEmail
+            })
+            .into('pictures')
+            .returning('name')
+            .then(useData => {
+                return trx('allbids')
+                    .returning('*')
+                    .insert({
+                        title: title,
+                        name: name,
+                        bid: bid,
+                        phone_email: phoneEmail
+                    })
+                    .then(d => {
+                        return res.status(200).json({ data: "inserted" })
+                    })
+            })
+            .then(trx.commit)
+            .catch(trx.rollback)
+
+    })
+        .catch(err => res.status(400).json({ data: "ERROR" }))
+
+})
+
 app.post('/artsbid', (req, res) => {
-    // db.where({ id: req.body.id })
-    //     .update({ name: req.body.name, bid: req.body.bid, phone_email: req.body.phoneEmail })
-    //     .into('art')
-    //     .then(data => {
-    //         res.status(200).send("Data updated")
-    //     })
 
     db.transaction(trx => {
         trx.where({ id: req.body.id })
@@ -288,26 +316,148 @@ app.post('/artsbid', (req, res) => {
 
 })
 
+app.post('/cdsbid', (req, res) => {
+
+    const { id, bid, name, phoneEmail, title } = req.body;
+    db.transaction(trx => {
+        trx.where({ id: id })
+            .update({
+                name: name,
+                bid: bid,
+                phone_email: phoneEmail
+            })
+            .into('cds')
+            .returning('name')
+            .then(useData => {
+                return trx('allbids')
+                    .returning('*')
+                    .insert({
+                        title: title,
+                        name: name,
+                        bid: bid,
+                        phone_email: phoneEmail
+                    })
+                    .then(d => {
+                        return res.status(200).json({ data: "inserted" })
+                    })
+            })
+            .then(trx.commit)
+            .catch(trx.rollback)
+
+    })
+        .catch(err => res.status(400).json({ data: "ERROR" }))
+})
+
+app.post('/dvdsbid', (req, res) => {
+
+    const { id, bid, name, phoneEmail, title } = req.body;
+    db.transaction(trx => {
+        trx.where({ id: id })
+            .update({
+                name: name,
+                bid: bid,
+                phone_email: phoneEmail
+            })
+            .into('dvds')
+            .returning('name')
+            .then(useData => {
+                return trx('allbids')
+                    .returning('*')
+                    .insert({
+                        title: title,
+                        name: name,
+                        bid: bid,
+                        phone_email: phoneEmail
+                    })
+                    .then(d => {
+                        return res.status(200).json({ data: "inserted" })
+                    })
+            })
+            .then(trx.commit)
+            .catch(trx.rollback)
+
+    })
+        .catch(err => res.status(400).json({ data: "ERROR" }))
+})
+
+app.post('/photosbid', (req, res) => {
+
+
+    const { id, bid, name, phoneEmail, title } = req.body;
+    db.transaction(trx => {
+        trx.where({ id: id })
+            .update({
+                name: name,
+                bid: bid,
+                phone_email: phoneEmail
+            })
+            .into('photos')
+            .returning('name')
+            .then(useData => {
+                return trx('allbids')
+                    .returning('*')
+                    .insert({
+                        title: title,
+                        name: name,
+                        bid: bid,
+                        phone_email: phoneEmail
+                    })
+                    .then(d => {
+                        return res.status(200).json({ data: "inserted" })
+                    })
+            })
+            .then(trx.commit)
+            .catch(trx.rollback)
+
+    })
+        .catch(err => res.status(400).json({ data: "ERROR" }))
+})
+
+
 
 app.post('/register', validinfo, async (req, res,) => {
     const { email, } = req.body;
     try {
-        console.log(email);
+        console.log("outside,", email);
         const userExist = await db.select('email').from('login').where({ email: email })
-        console.log(userExist);
+        console.log("userExist,", userExist);
         if (userExist.length > 0) {
             return res.json("user already exist")
         }
-        register.handleRegister(req, res, db, bcrypt)
+        register.handleRegister(req, res, db, bcrypt);
     } catch (error) {
         console.error(error.message);
-        res.status(400).json("errror")
+        res.status(400).json("error")
     }
 
 
 })
 
 app.post('/signin', validinfo, signin.handleSignin(db, bcrypt))
+// app.post('/signin', validinfo, async (req, res) =>{
+//     const {email} = req.body;
+//     try{
+//         const status = await db.select('status').from('users').where({email: email});
+
+//         console.log("status,",status);
+
+//         if(status.length === 0){
+//             return res.status(400).json("The user is not exist!")
+//         }
+    
+//         if(status[0].status === "pending"){
+//             return res.status(400).json("Please verify your account in your email first!");
+//         }
+        
+//         signin.handleSignin(req, res, db, bcrypt);
+
+//    }catch(err){
+//        res.status(400).json("error!");
+//    }
+// }
+// )
+
+// app.post('/signin', validinfo, signin.handleSignin(db, bcrypt))
 
 app.get("/isverify", authorization, (req, res) => {
     try {
@@ -329,6 +479,39 @@ app.get('/dashboard', authorization, async (req, res) => {
         res.status(500).json('Server Error')
     }
 })
+
+// app.get('/verifyEmail/:confirmationId', async (req, res) =>{
+//     const confirmationId = req.params.confirmationId;
+    
+//     console.log('verify,',confirmationId);
+    
+//     try{
+//         const userExist = await db.select('email').from('login').where({confirmationId: confirmationId});
+
+//         console.log('try,',userExist);
+
+//         if(userExist.length===0){
+//             return res.json({err: "The user is not exist!"});
+//         }
+       
+//         console.log("payload,", userExist[0].email);
+
+//         const updateStatus = await db('users').update({status: 'active'}).where({email: userExist[0].email});
+//         const deleteConfirmationId = await db('login').update({confirmationId: null}).where({email: userExist[0].email});
+        
+//         // const payload = {
+//         //     user: userExist[0].Id
+//         // }
+
+//         // console.log("payload,", payload);
+
+//         // const token = jwt.sign(payload, process.env.JWT_TOKEN, {expiresIn: 45 * 60});
+
+//         res.json({msg: "User verification sucess!"});
+//     }catch(err){
+//         return res.json({err: err.message});
+//     }
+// });
 
 
 app.listen(3001, () => {
